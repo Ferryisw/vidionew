@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Affiliate Player</title>
+    <!-- Tailwind CSS: Membuat tampilan otomatis pas di layar HP (Responsif) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Animasi agar popup iklan muncul dengan mulus */
+        .animasi-muncul {
+            animation: munculMulus 0.4s ease-out forwards;
+        }
+        @keyframes munculMulus {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 min-h-screen flex items-center justify-center p-4 font-sans text-white">
+
+    <!-- FRAME HP TAMPILAN VIDEO -->
+    <div class="relative w-full max-w-sm bg-black rounded-3xl overflow-hidden shadow-2xl border border-gray-700">
+        
+        <!-- 
+        🔴🔴🔴 1. GANTI LINK VIDEO DI BAWAH INI 👇👇👇
+        Hapus link https://... yang lama, lalu tempel (paste) link video Anda.
+        Pastikan link Anda tetap berada di dalam tanda kutip dua ("...") 
+        -->
+        <video id="videoSaya" class="w-full aspect-[9/16] object-cover" controls playsinline>
+            <source src="https://ferryisw.github.io/vidionew/abc-video.mp4" type="video/mp4">
+            Browser Anda tidak mendukung video.
+        </video>
+        <!-- 🛑🛑🛑 BATAS EDIT LINK VIDEO 👆👆👆 -->
+
+
+        <!-- Tombol Play Awal (Akan hilang saat video diputar) -->
+        <div id="layarPlay" class="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
+            <button onclick="putarVideo()" class="bg-orange-500 hover:bg-orange-600 text-white rounded-full p-5 shadow-lg transform transition hover:scale-110">
+                <svg class="w-10 h-10 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6z"></path></svg>
+            </button>
+        </div>
+
+
+        <!-- POPUP IKLAN (Awalnya ngumpet, muncul sesuai waktu) -->
+        <div id="popupIklan" class="hidden absolute inset-0 bg-black/80 backdrop-blur-sm z-20 flex items-center justify-center p-6">
+            <div class="bg-white w-full rounded-2xl p-6 text-center shadow-2xl">
+                
+                <h3 class="text-2xl font-black text-orange-600 mb-2">PROMO DISKON! 🎉</h3>
+                <p class="text-sm text-gray-700 mb-6">Barang di video ini lagi diskon besar. Buruan cek sebelum kehabisan!</p>
+                
+                <!-- 
+                🔴🔴🔴 2. GANTI LINK SHOPEE DI BAWAH INI 👇👇👇
+                Ganti tulisan https://shopee.co.id dengan link affiliate Shopee Anda.
+                -->
+                <a href="https://s.shopee.co.id/1BKMJcqXNB" target="_blank" id="tombolShopee" class="block w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-colors text-lg mb-4">
+                    🛒 Beli Sekarang
+                </a>
+                <!-- 🛑🛑🛑 BATAS EDIT LINK SHOPEE 👆👆👆 -->
+                
+                <button onclick="tutupIklan()" class="text-sm font-semibold text-gray-400 hover:text-gray-800 underline">
+                    Tutup & Lanjut Nonton
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SCRIPT MESIN LOGIKA (Jangan dihapus) -->
+    <script>
+        const video = document.getElementById('videoSaya');
+        const layarPlay = document.getElementById('layarPlay');
+        const popupIklan = document.getElementById('popupIklan');
+        const tombolShopee = document.getElementById('tombolShopee');
+
+        let iklanSudahTampil = false;
+        let klikShopee = false;
+
+        // 🔴🔴🔴 3. GANTI WAKTU MUNCUL IKLAN DI BAWAH INI 👇👇👇
+        // Angka 60 artinya iklan muncul di detik ke-60 (1 menit). 
+        // Ubah jadi 5 kalau mau ngetes cepet di TrebEdit.
+        const WAKTU_IKLAN_MUNCUL = 60;
+        // 🛑🛑🛑 BATAS EDIT WAKTU 👆👆👆
+
+
+        // Fungsi tombol play besar
+        function putarVideo() {
+            video.play();
+            layarPlay.style.display = 'none';
+        }
+
+        // Kalau video diputar dari tombol bawaan
+        video.addEventListener('play', () => {
+            layarPlay.style.display = 'none';
+        });
+
+        // Alarm mendeteksi waktu video berjalan
+        video.addEventListener("timeupdate", () => {
+            if (video.currentTime >= WAKTU_IKLAN_MUNCUL && !iklanSudahTampil) {
+                iklanSudahTampil = true;
+                munculkanIklan();
+            }
+        });
+
+        function munculkanIklan() {
+            video.pause(); // Stop video sementara
+            popupIklan.classList.remove('hidden');
+            popupIklan.classList.add('animasi-muncul');
+        }
+
+        function tutupIklan() {
+            popupIklan.classList.add('hidden');
+            popupIklan.classList.remove('animasi-muncul');
+            video.play(); // Lanjut putar
+        }
+
+        // Kalau penonton klik tombol Shopee
+        tombolShopee.addEventListener("click", () => {
+            klikShopee = true; // Mesin mengingat penonton pergi ke Shopee
+        });
+
+        // Kalau penonton kembali dari aplikasi Shopee ke browser kita
+        document.addEventListener("visibilitychange", () => {
+            if (!document.hidden && klikShopee) {
+                // Hilangkan iklan
+                popupIklan.classList.add('hidden');
+                popupIklan.classList.remove('animasi-muncul');
+                
+                // Putar lagi videonya otomatis
+                video.play().catch(e => console.log("Gagal diputar otomatis", e));
+                
+                // Reset memori mesin
+                klikShopee = false; 
+            }
+        });
+    </script>
+</body>
+</html>
