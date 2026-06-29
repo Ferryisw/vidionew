@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player Promo</title>
+    <style>
+        /* Gaya dasar agar tampilan rapi di HP dan Laptop */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .video-container {
+            width: 100%;
+            max-width: 600px;
+            background: #000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        video {
+            width: 100%;
+            display: block;
+        }
+
+        /* Tombol Play cadangan */
+        .play-btn-container {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+        }
+
+        button {
+            background-color: #ff4500;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #e03e00;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="video-container">
+        <!-- Elemen Video -->
+        <video id="video" preload="metadata" controls>
+            <!-- GANTI LINK SRC DI BAWAH INI DENGAN VIDEO ANDA -->
+            <source src="videofilm.mp4" type="video/mp4">
+            Browser Anda tidak mendukung pemutar video.
+        </video>
+    </div>
+
+    <!-- Tombol Play (Berdasarkan gambar baris 139) -->
+    <div class="play-btn-container">
+        <button onclick="playVideo()">▶ Putar Video</button>
+    </div>
+
+    <script>
+        // --- DEKLARASI VARIABEL ---
+        const video = document.getElementById("video");
+        let adShown = false;
+        let userWentToShopee = false;
+        
+        // GANTI LINK INI DENGAN LINK AFILIASI SHOPEE ANDA
+        const linkAfiliasi = "https://s.shopee.co.id/1gGcmIw6L6"; 
+
+        // Fungsi untuk memutar video saat tombol diklik
+        function playVideo() {
+            video.play();
+        }
+
+        // Fungsi untuk memunculkan iklan/Shopee
+        function showAd() {
+            // Membuka tab baru yang mengarah ke link afiliasi
+            window.open(linkAfiliasi, "_blank");
+            userWentToShopee = true;
+        }
+
+        // --- TIMER 1 MENIT (Baris 260 di gambar) ---
+        video.addEventListener("timeupdate", () => {
+            // Angka 60 berarti 60 detik (1 menit). 
+            // Jika ingin tes cepat, ganti angka 60 menjadi 5 (5 detik).
+            if (video.currentTime >= 60 && !adShown) {
+                adShown = true;
+                showAd(); // Panggil fungsi iklan
+            }
+        });
+
+        // --- KETIKA USER KEMBALI KE TAB INI (Baris 270 di gambar) ---
+        document.addEventListener("visibilitychange", () => {
+            if (!document.hidden) {
+                // Lanjutkan video otomatis saat user kembali dari tab Shopee
+                video.play(); 
+                
+                // Logika tambahan jika user sudah pernah ke Shopee
+                if (userWentToShopee) {
+                    console.log("Penonton sudah kembali dari halaman sponsor.");
+                    // Anda bisa menambahkan aksi lain di sini jika perlu
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
+
+
